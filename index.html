@@ -578,6 +578,7 @@
         @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
         .animate { animation: fadeIn 0.6s ease-out; }
     </style>
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
 </head>
 <body>
     <!-- 导航栏 -->
@@ -1144,6 +1145,11 @@
             });
         }
 
+        // 初始化EmailJS
+        (function(){
+            emailjs.init("Public Key");
+        })();
+
         // 订阅处理
         function handleSubscribe(event) {
             event.preventDefault();
@@ -1153,31 +1159,37 @@
             const wechat = document.getElementById('subWechat').value;
             const want = document.getElementById('subWant').value;
             
-            // 显示成功提示
-            document.getElementById('subscribeSuccess').classList.add('show');
+            const btn = document.querySelector('.subscribe-btn');
+            btn.textContent = '⏳ 提交中...';
+            btn.disabled = true;
             
-            // 更新订阅列表
-            const tbody = document.getElementById('subscribeTableBody');
-            const now = new Date();
-            const timeStr = now.getFullYear() + '-' + 
-                String(now.getMonth() + 1).padStart(2, '0') + '-' + 
-                String(now.getDate()).padStart(2, '0') + ' ' + 
-                String(now.getHours()).padStart(2, '0') + ':' + 
-                String(now.getMinutes()).padStart(2, '0');
-            
-            const newRow = `<tr><td>new</td><td>${name[0]}*</td><td>${email.substring(0,3)}***</td><td>${want || '待定'}</td><td>${timeStr}</td></tr>`;
-            tbody.innerHTML = newRow + tbody.innerHTML;
-            
-            // 清空表单
-            document.getElementById('subscribeForm').reset();
-            
-            // 滚动到成功提示
-            document.getElementById('subscribeSuccess').scrollIntoView({ behavior: 'smooth', block: 'center' });
-            
-            alert('✅ 订阅成功！\n\n📱 请添加客服QQ：2726094413\n我们会尽快联系您发送赚钱项目！');
+            emailjs.send("service_73uxcwy", "template_j3yhjan", {
+                name: name,
+                phone: phone,
+                email: email,
+                wechat: wechat,
+                want: want,
+                time: new Date().toLocaleString('zh-CN')
+            }).then(function() {
+                document.getElementById('subscribeSuccess').classList.add('show');
+                const tbody = document.getElementById('subscribeTableBody');
+                const now = new Date();
+                const timeStr = now.getFullYear() + '-' + String(now.getMonth() + 1).padStart(2, '0') + '-' + String(now.getDate()).padStart(2, '0') + ' ' + String(now.getHours()).padStart(2, '0') + ':' + String(now.getMinutes()).padStart(2, '0');
+                const newRow = '<tr><td>new</td><td>'+name[0]+'*</td><td>'+email.substring(0,3)+'***</td><td>'+(want || '待定')+'</td><td>'+timeStr+'</td></tr>';
+                tbody.innerHTML = newRow + tbody.innerHTML;
+                document.getElementById('subscribeForm').reset();
+                btn.textContent = '🎯 立即订阅 - 获取每日赚钱项目';
+                btn.disabled = false;
+                document.getElementById('subscribeSuccess').scrollIntoView({ behavior: 'smooth', block: 'center' });
+                alert('✅ 订阅成功！\n\n📱 请添加客服QQ：2726094413\n我们会尽快联系您发送赚钱项目！');
+            }, function() {
+                btn.textContent = '🎯 立即订阅 - 获取每日赚钱项目';
+                btn.disabled = false;
+                alert('❌ 提交失败，请重试或联系客服QQ：2726094413');
+            });
         }
 
-        // 点击背景关闭弹窗
+// 点击背景关闭弹窗
         document.getElementById('detailModal').addEventListener('click', function(e) {
             if (e.target === this) closeDetail();
         });
