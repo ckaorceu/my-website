@@ -578,7 +578,6 @@
         @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
         .animate { animation: fadeIn 0.6s ease-out; }
     </style>
-<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
 </head>
 <body>
     <!-- 导航栏 -->
@@ -1145,10 +1144,7 @@
             });
         }
 
-        // 初始化EmailJS
-        (function(){
-            emailjs.init("begGEXwUMn5LpNAk");
-        })();
+        // 使用Vercel API发送邮件
 
         // 订阅处理
         function handleSubscribe(event) {
@@ -1163,11 +1159,11 @@
             btn.textContent = '⏳ 提交中...';
             btn.disabled = true;
             
-            emailjs.send("service_73uxcwy", "template_j3yhjan", {
-                from_name: '副业赚钱网',
-                reply_to: email,
-                user_name: name,
-                message: '尊敬的 ' + name + '，您好！\n\n感谢您订阅副业赚钱网！我们会每天推送最新赚钱项目给您。\n\n📱 客服QQ：2726094413\n\n祝您早日实现财务自由！'
+            // 调用Vercel API发送邮件
+            fetch('https://app.tutw.fun/api/subscribe', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ name, phone, email, wechat, want })
             }).then(function() {
                 document.getElementById('subscribeSuccess').classList.add('show');
                 const tbody = document.getElementById('subscribeTableBody');
