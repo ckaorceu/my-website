@@ -1164,12 +1164,9 @@
             btn.disabled = true;
             
             emailjs.send("service_73uxcwy", "template_j3yhjan", {
-                name: name,
-                phone: phone,
-                email: email,
-                wechat: wechat,
-                want: want,
-                time: new Date().toLocaleString('zh-CN')
+                to_email: email,
+                user_name: name,
+                message: '尊敬的 ' + name + '，您好！\n\n感谢您订阅副业赚钱网！我们会每天推送最新赚钱项目给您。\n\n📱 客服QQ：2726094413\n\n祝您早日实现财务自由！'
             }).then(function() {
                 document.getElementById('subscribeSuccess').classList.add('show');
                 const tbody = document.getElementById('subscribeTableBody');
